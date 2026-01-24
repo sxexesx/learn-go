@@ -3,40 +3,101 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
+	"io"
 	"os"
+	"strconv"
+	"time"
 )
 
 func main() {
 	fmt.Println("start reading file...")
 
-	bytes, err := os.Open("data.csv")
+	file, err := os.Open("data.csv")
 	if err != nil {
 		fmt.Println("Error reading file:", err)
 		return
 	}
-	defer bytes.Close()
+	defer file.Close()
 
-	reader := csv.NewReader(bytes)
-	data, err := reader.ReadAll()
+	reader := csv.NewReader(file)
+
+	// tmpFile, err := os.CreateTemp(".", "temp_data.csv")
+	tmpFile, err := os.Create("data_temp.csv")
 	if err != nil {
-		fmt.Println("Error reading bytes:", err)
+		fmt.Printf("error creating temp file: %v", err)
+		return
+	}
+	defer tmpFile.Close()
+	// defer os.Remove(tmpFile.Name())
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	// Пропускаем заголовок
+	header, err := reader.Read()
+	if err != nil {
+		fmt.Println("Error reading header:", err)
 		return
 	}
 
-	persons := make([]Person, 0, len(data))
-	for _, row := range data {
-		persons = append(persons,
-			Person{
-				Name:   row[0],
-				Age:    row[1],
-				Email:  row[2],
-				City:   row[3],
-				Salary: row[4],
-			})
+	if err := writer.Write(header); err != nil {
+		fmt.Printf("error writing header: %v", err)
 	}
-	lastPerson := persons[len(persons)-1]
 
-	fmt.Printf("Last person: %v", lastPerson)
+	var counter int
+	now := time.Now()
+
+	// Стриминг: читаем и обрабатываем данные построчно
+	for {
+		row, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			fmt.Println("Error reading row:", err)
+			return
+		}
+
+		salary, err := strconv.ParseInt(row[4], 10, 0)
+		if err != nil {
+			return
+		}
+
+		person := Person{
+			Name:   "Mr." + row[0],
+			Age:    row[1],
+			Email:  row[2],
+			City:   row[3],
+			Salary: fmt.Sprintf("%d", salary+10000),
+		}
+		counter++
+
+		if err := writer.Write([]string{
+			person.Name,
+			person.Age,
+			person.Email,
+			person.City,
+			person.Salary,
+		}); err != nil {
+			fmt.Println(err)
+			break
+		}
+
+		if counter%1000 == 0 {
+			writer.Flush()
+		}
+	}
+	writer.Flush()
+
+	file.Close()
+	tmpFile.Close()
+
+	// if err := os.Rename(tmpFile.Name(), "data.csv"); err != nil {
+	// 	fmt.Printf("Error replacing file: %v", err)
+	// 	return
+	// }
+
+	fmt.Printf("Task done for %v\n", time.Since(now))
 }
 
 type Person struct {
