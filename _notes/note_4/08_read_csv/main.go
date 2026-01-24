@@ -21,33 +21,32 @@ func main() {
 
 	reader := csv.NewReader(file)
 
-	// tmpFile, err := os.CreateTemp(".", "temp_data.csv")
-	tmpFile, err := os.Create("data_temp.csv")
+	tmpFile, err := os.CreateTemp(".", "temp_data.csv")
 	if err != nil {
 		fmt.Printf("error creating temp file: %v", err)
 		return
 	}
 	defer tmpFile.Close()
-	// defer os.Remove(tmpFile.Name())
+	defer os.Remove(tmpFile.Name())
 
-	writer := csv.NewWriter(file)
+	writer := csv.NewWriter(tmpFile)
 	defer writer.Flush()
 
-	// Пропускаем заголовок
 	header, err := reader.Read()
 	if err != nil {
 		fmt.Println("Error reading header:", err)
 		return
 	}
+	fmt.Printf("%v", header)
 
 	if err := writer.Write(header); err != nil {
 		fmt.Printf("error writing header: %v", err)
 	}
+	writer.Flush()
 
 	var counter int
 	now := time.Now()
 
-	// Стриминг: читаем и обрабатываем данные построчно
 	for {
 		row, err := reader.Read()
 		if err == io.EOF {
@@ -92,10 +91,10 @@ func main() {
 	file.Close()
 	tmpFile.Close()
 
-	// if err := os.Rename(tmpFile.Name(), "data.csv"); err != nil {
-	// 	fmt.Printf("Error replacing file: %v", err)
-	// 	return
-	// }
+	if err := os.Rename(tmpFile.Name(), "data.csv"); err != nil {
+		fmt.Printf("Error replacing file: %v", err)
+		return
+	}
 
 	fmt.Printf("Task done for %v\n", time.Since(now))
 }
