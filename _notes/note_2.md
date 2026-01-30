@@ -42,7 +42,44 @@ Runtime теперь хранит GC метаданные ближе к объе
 10. Полная переработка execution tracer с поддержкой stream-обработки, корреляцией с системным временем и полными длительностями системных вызовов
 
 ## 1.23
+
+1. Языковые изменения: range over func (итераторы)
+2. Новый пакет iter
+3. Новый пакет unique: канонизация значений
+4. Новый пакет structs: маркеры для атрибутов struct
+5. Дополнения в slices и maps (поддержка итераторов)
+6. Улучшения timers: time.Timer и time.Ticker
+7. go toolchain и инструменты
+8. Прочие улучшения runtime/компилятора
+
 ## 1.24
+
+1. Полная поддержка обобщённых алиасов типов (Generic type aliases)
+2. Go tool: управление зависимостями инструментов
+3. JSON-вывод для build команд
+4. Версионирование main модуля
+5. Улучшенная работа с Cgo
+6. Улучшения Vet
+7. Оптимизация через Swiss Tables для map
+8. Новая реализация sync.Map
+
 ## 1.25
+
+1. Удаление концепции “Core Types” из спецификации
+2. go doc -http команда
+3. go version -m -json
+4. go.mod ignore директива
+5. Поддержка subdirectory modules
+6. go build -asan с leak detection
+7. Улучшения go vet
+
 ## 1.26
 
+1. new() функция с выражениями
+2. Recursive type constraints (generic self-reference)
+3. go mod init с нижней версией по умолчанию
+4. Удаление cmd/doc
+5. Полная переработка go fix
+6. Pprof flame graph по умолчанию
+7. Green Tea GC теперь по умолчанию
+8. Faster cgo calls (~30% улучшение)
