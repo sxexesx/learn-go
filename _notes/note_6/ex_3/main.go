@@ -12,7 +12,10 @@ func main() {
 	// test_1()
 
 	// Раздача данных для обработки несколькими воркерами
-	test_2()
+	// test_2()
+
+	// Буфферизация потока выполнения
+	test_3()
 }
 
 func test_1() {
@@ -71,4 +74,28 @@ func consumer(wg *sync.WaitGroup, ch <-chan int) {
 	a := <-ch
 	time.Sleep(time.Duration(a) * time.Second)
 	fmt.Printf("Consumer got value %d\n", a)
+}
+
+func test_3() {
+	ch := make(chan int, 5)
+
+	go func() {
+		for i := 0; i < 10; i++ {
+			ch <- i
+		}
+		close(ch)
+	}()
+
+	worker(ch)
+}
+
+func worker(ch <-chan int) {
+	for {
+		v, ok := <-ch
+		if !ok {
+			return
+		}
+		fmt.Printf("Got value %d\n", v)
+		time.Sleep(time.Duration(v) * time.Second)
+	}
 }
