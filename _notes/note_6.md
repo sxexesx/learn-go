@@ -48,7 +48,7 @@ bufCh := make(chan bool, 10)
 
 ### Что произойдет при записи в закрытый канал?
 
-Паника.
+Паника/deadlock
 
 ### Что произойдет при чтении из закрытого канала?
 
@@ -56,32 +56,8 @@ bufCh := make(chan bool, 10)
 
 ## Паттерны использования
 
-1. Сбор данных из нескольких историчников
+[примеры](note_6/ex_3/main.go)  
 
-```golang
-func producer(ch chan<- string){}
-
-var ch chan string
-for i:= 0; i < 10; i++ {
-    go producer(ch)
-}
-
-for x := range ch {
-    // обрабатываем данные
-}
-```
+1. Сбор данных из нескольких историчников  
 
 2. Раздача данных для обработки нескольким воркерам
-```golang
-func consumer(ch chan<- string){}
-
-var ch chan string
-for i:= 0; i < 10; i++ {
-    go consumer(ch)
-}
-
-for {
-    ch <- time.Now().Format("")
-}
-```
-

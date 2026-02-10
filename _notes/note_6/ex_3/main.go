@@ -2,12 +2,17 @@ package main
 
 import (
 	"fmt"
+	"math/rand/v2"
 	"sync"
 	"time"
 )
 
 func main() {
-	test_1()
+	// Сбор данных из нескольких источников
+	// test_1()
+
+	// Раздача данных для обработки несколькими воркерами
+	test_2()
 }
 
 func test_1() {
@@ -40,30 +45,30 @@ func producer(i int, wg *sync.WaitGroup, ch chan<- int) {
 	fmt.Printf("Горутина %d выполнилась\n", i)
 }
 
-// func test_2() {
+func test_2() {
+	ch := make(chan int)
 
-// }
+	wg := new(sync.WaitGroup)
+	for range 10 {
+		wg.Add(1)
+		go consumer(wg, ch)
+	}
 
-// ```golang
-// func producer(ch chan<- string){}
+	for i := 0; i < 10; i++ {
+		x := rand.IntN(10)
+		ch <- x
+	}
 
-// var ch chan string
-// for i:= 0; i < 10; i++ {
-//     go producer(ch)
-// }
+	wg.Wait()
+	close(ch)
 
-// for x := range ch {
-//     // обрабатываем данные
-// }
+	fmt.Println("All done!")
+}
 
-// 2. Раздача данных для обработки нескольким воркерам
+func consumer(wg *sync.WaitGroup, ch <-chan int) {
+	defer wg.Done()
 
-// func consumer(ch chan<- string){}
-
-// var ch chan string
-// for i:= 0; i < 10; i++ {
-//     go consumer(ch)
-// }
-// for {
-//     ch <- time.Now().Format("")
-// }
+	a := <-ch
+	time.Sleep(time.Duration(a) * time.Second)
+	fmt.Printf("Consumer got value %d\n", a)
+}
