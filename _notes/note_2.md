@@ -84,3 +84,5 @@ Runtime теперь хранит GC метаданные ближе к объе
 6. Pprof flame graph по умолчанию
 7. Green Tea GC теперь по умолчанию
 8. Faster cgo calls (~30% улучшение)
+
+[>>> Назад <<<](../README.md)

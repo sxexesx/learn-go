@@ -92,3 +92,5 @@ type iface struct {
 пакет io (Read, Write, ..), error
 
 
+
+[>>> Назад <<<](../README.md)
