@@ -7,11 +7,16 @@ import (
 )
 
 func main() {
+	// test_1()
+
+}
+
+func test_1() {
 	wg := new(sync.WaitGroup)
 
-	wg.Add(5) // вариант 1
+	wg.Add(5)
 	for i := 0; i < 5; i++ {
-		wg.Add(1) // вариант 2
+		wg.Add(1)
 		go longOperation(i, wg)
 	}
 	wg.Wait()
