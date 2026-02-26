@@ -129,7 +129,6 @@ bufCh := make(chan bool, 10)
 ## Аксиомы каналов
 
 [пример](note_7/ex_7/main.go)  
-[пример](note_7/ex_8/main.go)  
 
 <img src="_src/pic_20.png">
 
@@ -168,7 +167,9 @@ func generator() chan int {
 	return ch
 }
 ```
-
+### Pipeline
+Переливка данных из одного канала в другой  
+[пример](note_7/ex_8/main.go)  
 
 
 

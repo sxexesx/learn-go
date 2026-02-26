@@ -1,0 +1,24 @@
+package main
+
+import "fmt"
+
+func main() {
+	ch := make(chan int)
+
+	go func() {
+		for i := range 1000 {
+			ch <- i
+		}
+		close(ch)
+	}()
+
+	go func() {
+		for v := range ch {
+			fmt.Println("v = ", v, "worker1")
+		}
+	}()
+
+	for v := range ch {
+		fmt.Println("v = ", v, "worker2")
+	}
+}
