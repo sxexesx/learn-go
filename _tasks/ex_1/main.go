@@ -25,7 +25,8 @@ func predicableTimeWork() {
 
 	select {
 	case <-ch:
+		fmt.Println("3 seconds not exceeded")
 	case <-time.After(3 * time.Second):
-		fmt.Println("error")
+		fmt.Println("error: 3 seconds exceeded")
 	}
 }
