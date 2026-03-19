@@ -33,6 +33,21 @@ https://habr.com/ru/companies/vk/articles/314804/
 11. Анатомия каналов в Go
 https://habr.com/ru/articles/490336/
 
+12. Как Go решает, где размещать переменные: в стеке или куче.
+https://habr.com/ru/articles/497994/ — 
+
+13. Тонкости управления памятью
+https://habr.com/ru/companies/oleg-bunin/articles/676332/
+
+14. Context
+https://habr.com/ru/companies/pt/articles/764850/
+
+15. Реализация Graceful Shutdown в Go
+https://habr.com/ru/articles/771626/
+
+16. Дженерики
+https://habr.com/ru/companies/karuna/articles/552944/
+
 
 ### Посмотреть разделы:  
 **База:**  
