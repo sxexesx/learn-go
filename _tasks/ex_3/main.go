@@ -32,6 +32,9 @@ func getFiles(ctx context.Context, names ...string) (result map[string][]byte, e
 	})
 	defer close(ch)
 
+	ctx, cancel := context.WithCancel(context.TODO())
+	defer cancel()
+
 	result = make(map[string][]byte, len(names))
 	for _, name := range names {
 		// wg.Add(1)
