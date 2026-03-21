@@ -34,7 +34,7 @@ https://habr.com/ru/companies/vk/articles/314804/
 https://habr.com/ru/articles/490336/
 
 12. Как Go решает, где размещать переменные: в стеке или куче.
-https://habr.com/ru/articles/497994/ — 
+https://habr.com/ru/articles/497994/
 
 13. Тонкости управления памятью
 https://habr.com/ru/companies/oleg-bunin/articles/676332/
@@ -45,8 +45,17 @@ https://habr.com/ru/companies/pt/articles/764850/
 15. Реализация Graceful Shutdown в Go
 https://habr.com/ru/articles/771626/
 
-16. Дженерики
-https://habr.com/ru/companies/karuna/articles/552944/
+16. Собеседование по Go
+https://habr.com/ru/articles/654569/ ... https://habr.com/ru/articles/670974/
+
+17. Вопросы и ответы для собеседований go-разработчика
+https://habr.com/ru/articles/658623/
+
+18. Коллеги, вы меня огорчаете
+https://habr.com/ru/companies/oleg-bunin/articles/521582/
+
+19. 100 вопросов для собеседований
+https://uproger.com/go-100-voprosov-zadanij-s-sobesedovanij-podgotovka-k-sobesedovaniyu-golang/
 
 
 ### Посмотреть разделы:  

@@ -23,4 +23,3 @@
 
 Bonus:  
 1. [Список статей по GO](_notes/note_b1.md)
-2. [Остортировать](_notes/unsorted.md)

@@ -1,0 +1,34 @@
+package main
+
+import (
+	"fmt"
+	"runtime"
+	"sync"
+	"time"
+)
+
+func worker(wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	time.Sleep(1 * time.Millisecond)
+}
+
+func main() {
+	// количество логических процессоров на потоке
+	runtime.GOMAXPROCS(1)
+	MAX_TASKS := 10_000
+
+	wg := &sync.WaitGroup{}
+	wg.Add(MAX_TASKS)
+
+	start := time.Now()
+	for range MAX_TASKS {
+		go worker(wg)
+	}
+
+	wg.Wait()
+	fmt.Println(time.Since(start))
+}
+
+// Планировщику нужно какое-то время, чтобы жонглировать горутинами,
+// поэтому процесс займет не 1 мс
