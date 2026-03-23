@@ -129,6 +129,28 @@ func foo(a interface{}) {
 
 ```
 
+## Дженерики или type parameters
+
+Примеры [тут](/_notes/note_6/ex_6/)
+
+```golang
+func PrintSlice[T any](s []T) {
+    for _, v := range s {
+        fmt.Println(v)
+    }
+}
+```
+
+У дженериков могут быть констрейнты:
+```golang
+type MyConstraint interface {
+	int16 | int32
+}
+
+func [T MyConstraint](t T) {...}
+
+```
+
 ## Задачи
 [Задача 1](note_6/ex_1/main.go)  
 [Задача 2](note_6/ex_2/main.go)  

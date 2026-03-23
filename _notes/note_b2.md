@@ -1,6 +1,11 @@
-# Патерны
+# Микропаттерны
 
-## fanin
+## Producer
+
+## Pipeline
+
+## Fanin
+[Пример](note_b2/ex_1/main.go)
 
 ```golang
 func fanIn(chans ...<-chan int) <-chan int {
@@ -23,6 +28,6 @@ func fanIn(chans ...<-chan int) <-chan int {
 		close(result)
 	}()
 
-	return result
+	return results
 }
 ```

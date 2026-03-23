@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"sync"
 	"time"
+
+	errgroup "golang.org/x/sync/errgroup"
 )
 
 type User struct {
@@ -33,37 +35,30 @@ func main() {
 }
 
 func process(ctx context.Context, users []User) (map[string]int64, error) {
-	// если в этом месте будет не инициализированна мапа, тогда будет ошибка
 	names := make(map[string]int64, 0)
-
-	wg := sync.WaitGroup{}
 	mu := sync.Mutex{}
 
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
+	egroup, ectx := errgroup.WithContext(ctx)
+	egroup.SetLimit(100)
 
 	for _, u := range users {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		egroup.Go(
+			func() error {
+				name, err := fetch(ectx, u)
+				if err != nil {
+					return err
+				}
 
-			name, err := fetch(ctx, u)
-			if err != nil {
-				sync.OnceFunc(func() {
-					cancel()
-					e = err
-				})()
-			}
+				mu.Lock()
+				defer mu.Unlock()
+				names[name] = names[name] + 1
 
-			mu.Lock()
-			defer mu.Unlock()
-			names[name] = names[name] + 1
-		}()
+				return nil
+			})
 	}
-	wg.Wait()
 
-	if e != nil {
-		return nil, e
+	if err := egroup.Wait(); err != nil {
+		return nil, err
 	}
 
 	return names, nil
