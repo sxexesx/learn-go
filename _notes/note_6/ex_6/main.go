@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"go/build/constraint"
 	"strings"
 )
 
@@ -36,6 +35,5 @@ func Contains[S comparable](s S, ss []S) bool {
 }
 
 func Upper(str string) string {
-	constraint.
 	return strings.ToUpper(str)
 }

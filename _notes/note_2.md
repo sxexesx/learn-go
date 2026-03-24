@@ -76,13 +76,24 @@ Runtime теперь хранит GC метаданные ближе к объе
 
 ## 1.26
 
-1. new() функция с выражениями
-2. Recursive type constraints (generic self-reference)
+1. `new()` функция с выражениями.  
+Теперь можно использовать вот так:
+```golang
+new(42) // int
+new("hello world") // string
+new([]int{1, 2, 3}) // composite
+new(f()) // result of function call
+```
+2. Рекурсивные констрейнты в генериках 
 3. go mod init с нижней версией по умолчанию
 4. Удаление cmd/doc
 5. Полная переработка go fix
 6. Pprof flame graph по умолчанию
-7. Green Tea GC теперь по умолчанию
+7. Green Tea GC теперь по умолчанию  
+Цель - ускорить сборку мусора на современных многоядерных процессорах
 8. Faster cgo calls (~30% улучшение)
+
+<br>
+<br>
 
 [>>> Назад <<<](../README.md)
