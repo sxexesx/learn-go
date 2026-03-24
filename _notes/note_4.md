@@ -2,7 +2,7 @@
 
 ## Основные типы данных
 
-**Целочисленные:** byte, int8, uint8, int16, uint16, int32, uint32 int64, uint64, rune
+**Целочисленные:** byte, int8, uint8, int16, uint16, int32, uint32 int64, uint64, rune  
 **Вещественные:** float32, float64  
 **Логический:** bool  
 **Строковый**: string  
