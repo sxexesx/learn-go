@@ -69,10 +69,6 @@
     - [Зачем в go используются интерфейсы?](_notes/note_6.md#зачем-в-go-используются-интерфейсы)
     - [Best practice использования интерфейсов в GO](_notes/note_6.md#best-practice-использования-интерфейсов-в-go)
     - [Какой размер у переменной типа interface?](_notes/note_6.md#какой-размер-у-переменной-типа-interface)
-    - [](_notes/note_6.md)
-    - [](_notes/note_6.md)
-    - [](_notes/note_6.md)
-    - [](_notes/note_6.md)
     - [Дженерики или type-parameters](_notes/note_6.md#дженерики-или-type-parameters)
 
 
