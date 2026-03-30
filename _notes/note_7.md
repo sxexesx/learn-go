@@ -31,7 +31,6 @@
 
 **Fork/join**
 
-<!-- <img src="_src/pic_18.png"> -->
 ![](./_src/pic_18.png)
 
 ## Как синхронизировать горутины?
@@ -70,7 +69,6 @@ func foo(wg *sync.WaitGroup) {
 
 Параллельно запущенные горутины в один и тот же момент времени меняют одну переменную _m_
 
-<!-- <img src="_src/pic_19.png"> -->
 ![](./_src/pic_19.png)
 <br>
 <br>
@@ -124,14 +122,11 @@ bufCh := make(chan bool, 10)
 
 [пример](note_7/ex_7/main.go)  
 
-
 ![](_src/pic_20.png)
-<!-- <img src="_src/pic_20.png"> -->
   
   
 ### Буфферизированный
 
-<img src="_src/pic_21.png">
 ![](./_src/pic_21.png)
 
 
