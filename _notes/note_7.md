@@ -7,7 +7,7 @@
 
 <img src="_src/pic_5.png">
 
-![alt text](_src/pic_5.png)
+![alt text](./_src/pic_5.png)
 
 ## Что такое горутина? Почему придумали концепцию горутин?
 
