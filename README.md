@@ -98,7 +98,9 @@
     - [Как устроен Mutex?](_notes/note_8.md#как-устроен-mutex)
     - [Как устроен канал?](_notes/note_8.md#как-устроен-канал)
 
-10. [Контекст](_notes/note_10.md)
+9. [Полезные тулы и пакеты](_notes/note_9.md)
+    - [gRPC](_notes/note_9.md#grpc)
+    - [Контекст](_notes/note_9.md#контекст)
 
 --- 
 
