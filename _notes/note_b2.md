@@ -15,6 +15,24 @@ func producer() {
 }
 ```
 
+## WorkerPool
+
+```golang
+var max = 10
+
+func (c client) Proc(ctx context.Context, ch chan int) {
+	
+	for range max {
+		go func() {
+			for v := range ch {
+				c.DoSth(ctx, v)
+			}
+		}()
+
+	}
+}
+```
+
 ## Fanin
 Слияние нескольких каналов в один
 
