@@ -5,115 +5,45 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
-	"sync"
 	"time"
 )
 
-type outVal struct {
-	val int
-	err error
-}
-
-var errTimeout = errors.New("timed out")
-
-func processData(ctx context.Context, v int) chan outVal {
-	ch := make(chan int)
-	out := make(chan outVal)
-
-	go func() {
-		time.Sleep(time.Duration(rand.Intn(10)) * time.Second)
-		close(ch)
-	}()
-
-	go func() {
-		select {
-		case <-ch:
-			out <- outVal{
-				val: v * 2,
-				err: nil,
-			}
-		case <-ctx.Done():
-			out <- outVal{
-				val: 0,
-				err: errTimeout,
-			}
-		}
-	}()
-
-	return out
-}
-
 func main() {
-	in := make(chan int)
-	out := make(chan int)
+	res, err := predicableFunc()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("Func done with ", res, " seconds")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+}
+
+func unpredictableFunc() int {
+	n := rand.Intn(100)
+	time.Sleep(time.Duration(n) * time.Second)
+	return n
+}
+
+const (
+	pause = time.Duration(10) * time.Second
+)
+
+func predicableFunc() (int, error) {
+	c := make(chan int)
+	ctx := context.Background()
+
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
 	go func() {
-		defer close(in)
-
-		for i := range 10 {
-			select {
-			case in <- i + 1:
-			case <-ctx.Done():
-				return
-			}
-		}
+		c <- unpredictableFunc()
+		close(c)
 	}()
 
-	now := time.Now()
-	processParallel(ctx, in, out, 5)
-
-	for val := range out {
-		fmt.Println("v = ", val)
-	}
-
-	fmt.Println("program duration", time.Since(now))
-}
-
-// операция должна выполняться не более 5 секунд
-func processParallel(ctx context.Context, in <-chan int, out chan<- int, numWorkers int) {
-	wg := &sync.WaitGroup{}
-
-	for range numWorkers {
-		wg.Add(1)
-		go worker(ctx, wg, in, out)
-	}
-
-	go func() {
-		wg.Wait()
-		close(out)
-	}()
-
-}
-
-func worker(ctx context.Context, wg *sync.WaitGroup, in <-chan int, out chan<- int) {
-	defer wg.Done()
-
-	for {
-		select {
-		case v, ok := <-in:
-			if !ok {
-				return
-			}
-
-			select {
-			case ov := <-processData(ctx, v):
-				if ov.err != nil {
-					return
-				}
-				select {
-				case <-ctx.Done():
-					return
-				case out <- ov.val:
-				}
-
-			case <-ctx.Done():
-				return
-			}
-		case <-ctx.Done():
-			return
-		}
+	select {
+	case v := <-c:
+		return v, nil
+	case <-ctx.Done():
+		return 0, errors.New("Deadline is exceeded")
 	}
 }

@@ -7,26 +7,31 @@ import (
 )
 
 func main() {
-	predicableTimeWork()
+	predicableFunc()
 }
 
-func randomTimeWork() {
-	time.Sleep(time.Duration(rand.Intn(100)) * time.Second)
+func unpredictableFunc() int {
+	n := rand.Intn(100)
+	time.Sleep(time.Duration(n) * time.Second)
+	return n
 }
 
-// решение
-func predicableTimeWork() {
-	ch := make(chan struct{})
+const (
+	pause = 10 * time.Second
+)
+
+func predicableFunc() {
+	c := make(chan int)
 
 	go func() {
-		randomTimeWork()
-		close(ch)
+		c <- unpredictableFunc()
+		close(c)
 	}()
 
 	select {
-	case <-ch:
-		fmt.Println("3 seconds not exceeded")
-	case <-time.After(3 * time.Second):
-		fmt.Println("error: 3 seconds exceeded")
+	case v := <-c:
+		fmt.Println("Func done with ", v, " seconds")
+	case <-time.After(pause):
+		fmt.Println("Deadline is exceeded")
 	}
 }
