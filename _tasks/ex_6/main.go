@@ -2,43 +2,30 @@ package main
 
 import (
 	"fmt"
+	"runtime"
 	"sync"
-	"sync/atomic"
+	"time"
 )
 
-type myMutex struct {
-	locker int64
-}
+func worker(wg *sync.WaitGroup) {
+	defer wg.Done()
 
-func (m *myMutex) Lock() {
-	for {
-		if atomic.CompareAndSwapInt64(&m.locker, 0, 1) {
-			return
-		}
-	}
-}
-
-func (m *myMutex) Unlock() {
-	atomic.StoreInt64(&m.locker, 0)
+	time.Sleep(1 * time.Millisecond)
 }
 
 func main() {
+	// количество логических процессоров на потоке
+	runtime.GOMAXPROCS(1)
+	MAX_TASKS := 10_000
+
 	wg := &sync.WaitGroup{}
-	mu := myMutex{}
+	wg.Add(MAX_TASKS)
 
-	wg.Add(1000)
-	c := 0
-	for range 1000 {
-		go func() {
-			defer wg.Done()
-
-			mu.Lock()
-			c++
-			mu.Unlock()
-		}()
+	start := time.Now()
+	for range MAX_TASKS {
+		go worker(wg)
 	}
+
 	wg.Wait()
-
-	fmt.Println(c)
-
+	fmt.Println(time.Since(start))
 }

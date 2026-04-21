@@ -1,4 +1,4 @@
-## Сделать из непредсказуемой функции предсказуемую // реализовать функцию обертку
+## 1. Сделать из непредсказуемой функции предсказуемую // реализовать функцию обертку
 
 ```golang
 func main() {
@@ -16,8 +16,9 @@ func predicableFunc() {
 }
 
 ```
+<details>
+    <summary>Ответ</summary>
 
-Ответ: [тут](ex_1/main.go)
 ```golang
 func predicableFunc() {
 	c := make(chan int)
@@ -36,9 +37,16 @@ func predicableFunc() {
 }
 ```
 
-## Сделать из непредсказуемой функции предсказуемую через Context
+</details>
 
-Ответ:
+Решение [тут](ex_1/main.go)
+
+
+## 2. Сделать из непредсказуемой функции предсказуемую через Context
+
+<details>
+    <summary>Ответ</summary>
+
 ```golang
 func predicableFunc() (int, error) {
 	c := make(chan int)
@@ -60,3 +68,61 @@ func predicableFunc() (int, error) {
 	}
 }
 ```
+
+</details>
+
+Решение [тут](ex_2/main.go)
+
+
+
+## 3. Необходимо написать функцию `reader(doubler(writer()))` при условии, что doubler отрабатывает с задержкой 500 мс
+
+<details>
+    <summary>Ответ</summary>
+
+```golang
+func main() {
+	// writer()
+	// doubler
+	// reader
+	reader(doubler(writer()))
+}
+
+func writer() <-chan int {
+	c := make(chan int)
+
+	go func() {
+		for i := range 10 {
+			c <- i
+		}
+		close(c)
+	}()
+
+	return c
+}
+
+func doubler(c <-chan int) <-chan int {
+	result := make(chan int)
+
+	go func() {
+		for v := range c {
+			time.Sleep(500 * time.Millisecond)
+			result <- v * 2
+		}
+		close(result)
+	}()
+	return result
+}
+
+func reader(c <-chan int) {
+	for v := range c {
+		fmt.Println(v)
+	}
+	fmt.Println("done")
+}
+```
+
+</details>
+
+
+Решение [тут](ex_1/main.go)
