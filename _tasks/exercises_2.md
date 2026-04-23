@@ -291,3 +291,5 @@ func main() {
 
 
 ## 5c. Rate Limiter. Количество rps
+
+Решение [тут](ex_9/main.go)
