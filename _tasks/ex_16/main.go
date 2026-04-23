@@ -118,5 +118,5 @@ func generate(reqs []Request) chan Request {
 		}
 		close(ch)
 	}()
-
+	return ch
 }

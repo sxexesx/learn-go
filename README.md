@@ -107,7 +107,10 @@
 - [Микропаттерны конкурентности](_notes/note_b2.md)  
 - [Полезные приемы и конструкции](_notes/note_b3.md)  
     - [error group](_notes/note_b3.md#error-группа)
-- [Задачи](_tasks/task_1.md)
+- Задачи
+    - [Блок 1](_tasks/exercises_1.md)
+    - [Блок 2](_tasks/exercises_2.md)
+    - [Блок 3. Большие наработки](_tasks/exercises_3.md)
 
 ---
 
