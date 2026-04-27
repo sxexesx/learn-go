@@ -40,5 +40,4 @@ func main() {
 	wg.Wait()
 
 	fmt.Println(c)
-
 }

@@ -15,7 +15,7 @@ func producer() {
 }
 ```
 
-## 1. Woorker pool
+## 1. Worker pool
 
 Ограниченное количества горутин обрабатывает поток данных  
 
@@ -234,35 +234,140 @@ func main() {
 
 Ограничить количество одновременно выполняемых задач
 
-
-
-
-
-
-## Буфферизация потока выполнения
-
-[Пример](note_b2/ex_4/main.go)
+[Пример](note_10/ex_7/main.go)
 
 ```golang
+func main() {
+	const limit = 3
+	const jobs = 20
+
+	sem := make(chan struct{}, limit)
+	wg := sync.WaitGroup{}
+
+	for i := 0; i < jobs; i++ {
+		wg.Add(1)
+
+		go func() {
+			defer wg.Done()
+
+			// занимаем слот симафора
+			sem <- struct{}{}
+
+			// освобождаем слот
+			defer func() {
+				<-sem
+			}()
+
+			// do process
+		}()
+	}
+	wg.Wait()
+}
+```
+
+### 8. Pub/Sub
+
+Один источник -> много подписчиков
+
+Когда исползовать:
+- события
+- уведомления
+- реактивные системы
+
+[Пример](note_10/ex_8/main.go)
+
+```golang
+type Broker struct {
+	mu   sync.RWMutex
+	subs []chan string
+}
+
+func NewBroker() *Broker {
+	return &Broker{
+		subs: make([]chan string, 0),
+	}
+}
+
+func (b *Broker) Subscribe() <-chan string {
+	c := make(chan string, 5)
+
+	b.mu.Lock()
+	b.subs = append(b.subs, c)
+	b.mu.Unlock()
+
+	return c
+}
+
+// публикация всем подписчикам
+func (b *Broker) Publish(msg string) {
+	b.mu.RLock()
+	defer b.mu.RUnlock()
+
+	for _, ch := range b.subs {
+		ch <- msg
+	}
+}
+
+func (b *Broker) Close() {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+
+	for _, ch := range b.subs {
+		close(ch)
+	}
+}
 
 func main() {
-	ch := make(chan int, 5)
+	broker := NewBroker()
+
+	sub1 := broker.Subscribe()
+	sub2 := broker.Subscribe()
 
 	go func() {
+		for msg := range sub1 {
+			fmt.Println("subscriber 1: ", msg)
+		}
+	}()
+
+	go func() {
+		for msg := range sub2 {
+			fmt.Println("subscriber 2: ", msg)
+		}
+	}()
+
+	broker.Publish("order created")
+	broker.Publish("payment receive")
+
+	time.Sleep(time.Second)
+
+	broker.Close()
+}
+```
+
+### 9. Rate limiting
+
+[Пример](note_10/ex_9/main.go)
+
+Контролировать частоту операций
+
+```golang
+func main() {
+	jobs := make(chan int)
+
+	go func() {
+		defer close(jobs)
+
 		for i := 0; i < 10; i++ {
-			ch <- i
+			jobs <- i
 		}
-		close(ch)
 	}()
 
-	go func() {
-		for {
-			v, ok := <-ch
-			if !ok {
-				return
-			}
-			time.Sleep(time.Duration(v) * time.Second)
-		}
-	}()
+	ticker := time.Tick(1 * time.Second)
+
+	for j := range jobs {
+		<-ticker
+		fmt.Println("process job ", j, time.Now().Format("15:04:05.000"))
+	}
+	fmt.Println("done")
 }
 ```

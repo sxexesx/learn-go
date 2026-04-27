@@ -102,9 +102,19 @@
     - [gRPC](_notes/note_9.md#grpc)
     - [Контекст](_notes/note_9.md#контекст)
 
---- 
+10. [Микропаттерны конкурентности](_notes/note_10.md)  
+    - [Генератор](_notes/note_10.md#0-генератор)
+    - [Worker pool](_notes/note_10.md#1-worker-pool)
+    - [Fan in](_notes/note_10.md#2-fan-in)
+    - [Fan out](_notes/note_10.md#3-fan-out)
+    - [Pipeline](_notes/note_10.md#4-pipeline)
+    - [Context cancellation](_notes/note_10.md#5-context-cancellation)
+    - [Select + timeout](_notes/note_10.md#6-select--timeout)
+    - [Semaphore](_notes/note_10.md#7-semaphore-ограничение-параллелизма)
+    - [Pub/Sub](_notes/note_10.md#8-pubsub)
+    - [Rate limiting](_notes/note_10.md#9-rate-limiting)
 
-- [Микропаттерны конкурентности](_notes/note_b2.md)  
+--- 
 
 - Задачи
     - [Блок 1](_tasks/exercises_1.md)
