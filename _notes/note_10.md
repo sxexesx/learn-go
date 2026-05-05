@@ -371,3 +371,10 @@ func main() {
 	fmt.Println("done")
 }
 ```
+
+
+<br>
+<br>
+<br>  
+
+[>>> Назад <<<](../README.md)
