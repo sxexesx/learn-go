@@ -44,5 +44,34 @@ func process(ctx context.Context, users []User) (map[string]int64, error) {
 	return names, nil
 }
 ```
-
 </details>
+
+
+## 3. Реализовать WorkerPool с дополнительными условиями
+
+```golang
+type WorkerPool struct {
+}
+
+func NewWorkerPool(numberOfWorkers int) *WorkerPool {
+}
+
+// Submit - добавить таску в воркер пул и возвращает управление (неблокирующая операция).
+// Обеспечить соблюдение очереди при запуске задач.
+func (wp *WorkerPool) Submit(task func()) error {
+}
+
+// SubmitWait - добавить таску в воркер пул и дождаться окончания ее выполнения.
+// Если был вызван метод Stop, SubmitWait выходит с ошибкой ErrStopped для задач
+// которые ждут выполнения. Задачи которые выполняются должны доработать.
+func (wp *WorkerPool) SubmitWait(task func()) error {
+}
+
+// Stop - остановить воркер пул, дождаться выполнения только тех тасок, которые выполняются сейчас
+func (wp *WorkerPool) Stop() error {
+}
+
+// StopWait - остановить воркер пул, дождаться выполнения всех тасок, даже тех, что не начали выполняться, но лежат в очереди
+func (wp *WorkerPool) StopWait() error {
+}
+```
