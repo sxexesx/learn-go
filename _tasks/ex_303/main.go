@@ -1,9 +1,12 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"sync"
 )
+
+var ErrStopped = errors.New("ErrStopped")
 
 func main() {
 	wp := NewWorkerPool(3)
@@ -13,88 +16,142 @@ func main() {
 	wp.Submit(f)
 }
 
-func wp() {
-	ch := make(chan func())
-	wg := sync.WaitGroup{}
-
-	for i := 0; i < 10; i++ {
-		wg.Add(1)
-
-		go func() {
-			defer wg.Done()
-
-			ch <- func() {}
-		}()
-	}
-	go func() {
-		wg.Wait()
-		close(ch)
-	}()
-}
-
 type WorkerPool struct {
-	// wg          sync.WaitGroup{}
-	// queue       chan func()
-	// results     chan struct()
-	// buffer      int
+	mu      sync.Mutex
+	cond    *sync.Cond
+	wg      sync.WaitGroup
+	queue   []Task
+	stopped bool
+	drain   bool
+
+	// stop chan struct{}
 }
 
-// type ElementType struct {
-//     id int
-//     fun func()
-// }
-
-// type Task struct {
-//     fun     func()
-//     result  chan bool
-// }
+type Task struct {
+	t    func()
+	done chan error
+}
 
 func NewWorkerPool(numberOfWorkers int) *WorkerPool {
-	jobs := make(chan struct{}, numberOfWorkers)
-
-	for i := 0; i < numberOfWorkers; i++ {
-		go func() {
-
-			// for {
-			task := <-queue
-			task.fun()
-
-			task.result <- true
-			// }
-		}()
+	if numberOfWorkers <= 0 {
+		numberOfWorkers = 1
 	}
 
-	// return &WorkerPool{
-	//     queue: queue,
-	//     // result
-	// }
+	wp := &WorkerPool{}
+
+	wp.wg.Add(numberOfWorkers)
+	for i := 0; i < numberOfWorkers; i++ {
+		go wp.worker()
+	}
+
+	return wp
+}
+
+func (wp *WorkerPool) worker() {
+	defer wp.wg.Done()
+
+	for {
+		wp.mu.Lock()
+
+		for len(wp.queue) == 0 && !wp.stopped {
+			wp.cond.Wait()
+		}
+
+		if wp.stopped && len(wp.queue) == 0 {
+			wp.mu.Unlock()
+		}
+
+		task := wp.queue[0]
+		wp.queue = wp.queue[1:]
+
+		wp.mu.Unlock()
+
+		task.t()
+
+		if task.done != nil {
+			task.done <- nil
+		}
+	}
 }
 
 // Submit - добавить таску в воркер пул и возвращает управление (неблокирующая операция).
 // Обеспечить соблюдение очереди при запуске задач.
 func (wp *WorkerPool) Submit(task func()) error {
-	// wp.queue <- task()
+	wp.mu.Lock()
+	defer wp.mu.Unlock()
 
-	// return nil
+	if wp.stopped {
+		return ErrStopped
+	}
+
+	wp.queue = append(wp.queue, Task{t: task})
+
+	wp.cond.Signal()
+	return nil
 }
 
 // SubmitWait - добавить таску в воркер пул и дождаться окончания ее выполнения.
 // Если был вызван метод Stop, SubmitWait выходит с ошибкой ErrStopped для задач
 // которые ждут выполнения. Задачи которые выполняются должны доработать.
 func (wp *WorkerPool) SubmitWait(task func()) error {
-	// st := make(ch struct)
+	done := make(chan error, 1)
 
-	// wp.queue.fun <- task()
+	wp.mu.Lock()
 
-	// <-wp.queue.result
+	if wp.stopped {
+		wp.mu.Unlock()
+		return ErrStopped
+	}
 
-	// return nil
+	wp.queue = append(wp.queue, Task{
+		t:    task,
+		done: done,
+	})
+
+	wp.cond.Signal()
+	wp.mu.Unlock()
+
+	return <-done
 }
 
 // Stop - остановить воркер пул, дождаться выполнения только тех тасок, которые выполняются сейчас
 func (wp *WorkerPool) Stop() error {
+	wp.mu.Lock()
+
+	if wp.stopped {
+		wp.mu.Unlock()
+		wp.wg.Wait()
+
+		return nil
+	}
+	wp.stopped = true
+	wp.drain = false
+
+	for _, task := range wp.queue {
+		if task.done != nil {
+			task.done <- ErrStopped
+		}
+	}
+
+	wp.queue = nil
+	wp.cond.Broadcast()
+
+	wp.mu.Unlock()
+	wp.wg.Wait()
+	return nil
 }
 
 // StopWait - остановить воркер пул, дождаться выполнения всех тасок, даже тех, что не начали выполняться, но лежат в очереди
 func (wp *WorkerPool) StopWait() error {
+	wp.mu.Lock()
+
+	if !wp.stopped {
+		wp.stopped = true
+		wp.drain = true
+
+		wp.cond.Broadcast()
+	}
+
+	wp.wg.Wait()
+	return nil
 }

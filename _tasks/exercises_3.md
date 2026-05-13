@@ -47,7 +47,7 @@ func process(ctx context.Context, users []User) (map[string]int64, error) {
 </details>
 
 
-## 3. Реализовать WorkerPool с дополнительными условиями
+## 3. Реализовать WorkerPool с дополнительными условиями (оч сложная задача)
 
 ```golang
 type WorkerPool struct {
